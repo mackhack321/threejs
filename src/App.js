@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { FlyControls } from "three/examples/jsm/controls/FlyControls";
 import Stats from "three/examples/jsm/libs/stats.module";
 
 function App() {
@@ -36,8 +36,13 @@ function App() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // initialize orbit controls (move camera with mouse and scroll)
-    const controls = new OrbitControls(camera, renderer.domElement);
+    // initialize fly controls (lets you move)
+    // WASD: move, R/F: up/down, Q/E: roll, up_arrow/down_arrow: pitch, left_arrow/right_arrow: yaw
+    const controls = new FlyControls(camera, renderer.domElement);
+    controls.movementSpeed = 100;
+    controls.rollSpeed = Math.PI / 24;
+    controls.autoForward = false;
+    controls.dragToLook = true;
 
     // initialize and add directional light source (scuffed)
     // takes two arguments: color and intensity
@@ -56,6 +61,7 @@ function App() {
 
       // function for when loading completes
       function (gltf) {
+        console.log("finished loading");
         gltf.scene.traverse((n) => {
           if (n.isMesh) {
             n.castShadow = true;
@@ -68,7 +74,9 @@ function App() {
 
       // function to be run as the model is loading
       // this is where you'd put some sort of loading bar
-      undefined,
+      function (xhr) {
+        console.log("loading model...");
+      },
 
       // error handler function
       function (error) {
@@ -82,8 +90,8 @@ function App() {
 
     // move camera to be somewhat inside the building on load
     camera.position.set(100, 100, 50);
-    // you need to update the orbit controls every time you manually move the camera
-    controls.update();
+    // you need to update the controls every time you manually move the camera
+    controls.update(0.1);
 
     // render function
     var render = function () {
@@ -94,8 +102,8 @@ function App() {
     function animate() {
       requestAnimationFrame(animate);
 
-      // update orbit controls
-      controls.update();
+      // update controls
+      controls.update(0.1);
 
       // re-render
       render();
