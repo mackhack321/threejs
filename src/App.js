@@ -39,10 +39,14 @@ function App() {
     // initialize orbit controls (move camera with mouse and scroll)
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    // initialize and add light source (scuffed)
+    // initialize and add directional light source (scuffed)
     // takes two arguments: color and intensity
     const directionalLight = new THREE.DirectionalLight("#ffffff", 10);
     scene.add(directionalLight);
+
+    // add ambient light source
+    const light = new THREE.AmbientLight("#404040", 5);
+    scene.add(light);
 
     // load the 3D model
     const loader = new GLTFLoader();
